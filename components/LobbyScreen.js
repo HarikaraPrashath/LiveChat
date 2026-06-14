@@ -24,20 +24,17 @@ function LobbyInner({ onJoin }) {
 
   function handleJoin(e) {
     e.preventDefault();
-
     const u = username.trim();
     const r = roomId.trim();
-
     if (!u) return setError("Choose a username");
     if (!r) return setError("Choose a room");
-    if (u.length < 2)
-      return setError("Username must be at least 2 characters");
-
+    if (u.length < 2) return setError("Username must be at least 2 characters");
     onJoin(u, r);
   }
 
   return (
-    <>
+    // ✅ Full-screen centered wrapper
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
       {/* Background grid */}
       <div
         className="fixed inset-0 opacity-10 pointer-events-none"
@@ -48,19 +45,18 @@ function LobbyInner({ onJoin }) {
         }}
       />
 
-      <div className="w-full max-w-md relative z-10 animate-[fade-up_0.4s_ease]">
+      {/* Content — constrained width, centered */}
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-3 mb-3">
             <div className="w-9 h-9 bg-indigo-500 rounded-lg flex items-center justify-center animate-pulse">
               💬
             </div>
-
             <span className="text-2xl font-extrabold tracking-tight">
               LiveChat
             </span>
           </div>
-
           <p className="text-xs font-mono text-zinc-400">
             Real-time · WebSocket · Node.js
           </p>
@@ -76,7 +72,6 @@ function LobbyInner({ onJoin }) {
               <label className="block text-[11px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
                 Username
               </label>
-
               <input
                 ref={usernameRef}
                 type="text"
@@ -97,7 +92,7 @@ function LobbyInner({ onJoin }) {
                 Room
               </label>
 
-              {/* quick rooms */}
+              {/* Quick rooms */}
               <div className="flex flex-wrap gap-2 mb-3">
                 {rooms.map((r) => (
                   <button
@@ -123,9 +118,7 @@ function LobbyInner({ onJoin }) {
                 type="text"
                 value={roomId}
                 onChange={(e) => {
-                  setRoomId(
-                    e.target.value.toLowerCase().replace(/\s/g, "-")
-                  );
+                  setRoomId(e.target.value.toLowerCase().replace(/\s/g, "-"));
                   setError("");
                 }}
                 placeholder="or type a room name"
@@ -153,7 +146,7 @@ function LobbyInner({ onJoin }) {
           No account needed · Messages are ephemeral
         </p>
       </div>
-    </>
+    </div>
   );
 }
 
