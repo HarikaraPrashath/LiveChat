@@ -1,48 +1,46 @@
 "use client";
-import { useState } from "react";
-import { useEffect,useRef } from "react";
+
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function LobbyScreen({ onJoin }) {
+function LobbyInner({ onJoin }) {
   const [username, setUsername] = useState("");
   const [roomId, setRoomId] = useState("");
   const [error, setError] = useState("");
+
+  const usernameRef = useRef(null);
   const searchParams = useSearchParams();
-  
-  const usernameRef = useRef(null); 
 
-    //Add focus effect
-    useEffect(() => {
-      usernameRef.current?.focus();
-    }, []);
+  useEffect(() => {
+    usernameRef.current?.focus();
+  }, []);
 
-
-    useEffect(() => {
-      const roomFromUrl = searchParams.get("room");
-      if (roomFromUrl) {
-        setRoomId(roomFromUrl);
-      }
-    }, []);
+  useEffect(() => {
+    const roomFromUrl = searchParams.get("room");
+    if (roomFromUrl) setRoomId(roomFromUrl);
+  }, [searchParams]);
 
   const rooms = ["general", "tech-talk", "random", "announcements"];
 
   function handleJoin(e) {
     e.preventDefault();
+
     const u = username.trim();
     const r = roomId.trim();
 
     if (!u) return setError("Choose a username");
     if (!r) return setError("Choose a room");
-    if (u.length < 2) return setError("Username must be at least 2 characters");
+    if (u.length < 2)
+      return setError("Username must be at least 2 characters");
 
     onJoin(u, r);
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 relative bg-zinc-950 text-zinc-100">
-
+    <>
       {/* Background grid */}
-      <div className="fixed inset-0 opacity-10 pointer-events-none"
+      <div
+        className="fixed inset-0 opacity-10 pointer-events-none"
         style={{
           backgroundImage:
             "linear-gradient(#27272a 1px, transparent 1px), linear-gradient(90deg, #27272a 1px, transparent 1px)",
@@ -51,7 +49,6 @@ export default function LobbyScreen({ onJoin }) {
       />
 
       <div className="w-full max-w-md relative z-10 animate-[fade-up_0.4s_ease]">
-
         {/* Logo */}
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-3 mb-3">
@@ -71,20 +68,16 @@ export default function LobbyScreen({ onJoin }) {
 
         {/* Card */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
-
-          <h2 className="text-lg font-bold mb-6">
-            Join a room
-          </h2>
+          <h2 className="text-lg font-bold mb-6">Join a room</h2>
 
           <form onSubmit={handleJoin} className="space-y-4">
-
             {/* Username */}
             <div>
               <label className="block text-[11px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
                 Username
               </label>
 
-             <input
+              <input
                 ref={usernameRef}
                 type="text"
                 value={username}
@@ -143,9 +136,7 @@ export default function LobbyScreen({ onJoin }) {
 
             {/* Error */}
             {error && (
-              <p className="text-red-400 text-xs font-mono">
-                ⚠ {error}
-              </p>
+              <p className="text-red-400 text-xs font-mono">⚠ {error}</p>
             )}
 
             {/* Submit */}
@@ -162,6 +153,14 @@ export default function LobbyScreen({ onJoin }) {
           No account needed · Messages are ephemeral
         </p>
       </div>
-    </div>
+    </>
+  );
+}
+
+export default function LobbyScreen(props) {
+  return (
+    <Suspense fallback={null}>
+      <LobbyInner {...props} />
+    </Suspense>
   );
 }
